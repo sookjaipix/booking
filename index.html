@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Sook Jai Pix — สรุปยอดคงเหลือค่าบริการถ่ายภาพ</title>
+  
+  <!-- Premium Fonts: Plus Jakarta Sans & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2canvas for High-Res JPEG export (Local Offline-Ready) -->
+  <script src="html2canvas.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'Prompt', 'sans-serif'],
+            serifDisplay: ['"Playfair Display"', 'Georgia', 'serif'],
+          },
+          colors: {
+            stone: {
+              850: '#1f1c19',
+              925: '#141210',
+              950: '#0c0a09',
+            },
+            champagne: {
+              50: '#fbf8f3',
+              100: '#f6efdf',
+              200: '#eddcb8',
+              300: '#e1c48c',
+              400: '#d4ad64',
+              500: '#c59546',
+              600: '#a77636',
+              700: '#83572c',
+              800: '#684527',
+              900: '#543922',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#f9f8f6] text-stone-800 font-sans antialiased min-h-screen selection:bg-stone-900 selection:text-white">
+
+  <!-- Top App Navigation Bar (Clean Minimal Glass & iPhone Safe Area) -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-stone-200/70 sticky top-0 z-30 safe-top">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Studio Title -->
+      <div class="flex items-center space-x-3.5">
+        <img src="logo-dark.png" alt="Sook Jai Pix" class="h-9 sm:h-10 w-auto object-contain">
+        <div class="border-l border-stone-200/80 pl-3 hidden sm:block">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200/70">STUDIO</span>
+            <span class="text-xs text-stone-500 font-light">ระบบสรุปยอดงาน</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- History Link Button -->
+        <a href="history.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-700 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200 rounded-lg transition-all duration-150 shadow-xs">
+          <i data-lucide="archive" class="w-3.5 h-3.5 text-champagne-600"></i>
+          <span>ประวัติการจอง</span>
+          <span id="headerBookingCount" class="text-[10px] font-mono px-1.5 py-0.5 bg-stone-100 text-stone-700 rounded-md font-semibold">0</span>
+        </a>
+
+        <!-- Google Sheets Settings Button -->
+        <button id="btnOpenGasSettings" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-lg transition-all duration-150 shadow-xs" title="ตั้งค่าเชื่อมต่อ Google Sheets">
+          <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span class="hidden md:inline">ตั้งค่า Sheets</span>
+        </button>
+
+        <button id="btnQuickSample" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200 rounded-lg transition-all duration-150">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-champagne-600"></i>
+          <span class="hidden sm:inline">โหลด</span>ตัวอย่าง
+        </button>
+        <button id="btnClearForm" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-500 hover:text-rose-600 bg-white hover:bg-rose-50/50 border border-stone-200 rounded-lg transition-all duration-150">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>ล้างฟอร์ม</span>
+        </button>
+        
+        <div class="h-4 w-[1px] bg-stone-200 mx-1 hidden sm:block"></div>
+
+        <button id="btnTopSaveJpeg" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium tracking-wide text-white bg-stone-900 hover:bg-stone-850 active:scale-[0.98] rounded-xl shadow-sm transition-all duration-150">
+          <i data-lucide="download" class="w-3.5 h-3.5 text-stone-300"></i>
+          <span>บันทึกภาพ JPEG</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace Layout -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-28 sm:py-8">
+
+    <!-- Mobile Segmented Navigation Tabs (Only visible on mobile / tablet < lg) -->
+    <div class="lg:hidden mb-5">
+      <div class="bg-stone-200/70 p-1 rounded-xl flex items-center gap-1 shadow-inner">
+        <button id="mobileTabEditor" type="button" class="flex-1 py-2.5 px-3 text-xs font-semibold rounded-lg transition-all duration-150 flex items-center justify-center gap-1.5 bg-white text-stone-900 shadow-xs">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>1. กรอกข้อมูล</span>
+        </button>
+        <button id="mobileTabPreview" type="button" class="flex-1 py-2.5 px-3 text-xs font-medium rounded-lg transition-all duration-150 flex items-center justify-center gap-1.5 text-stone-600 hover:text-stone-900">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>2. ดูใบสรุปยอด</span>
+          <span id="mobileBadgeRemaining" class="ml-1 text-[10px] font-mono font-semibold bg-stone-900 text-white px-1.5 py-0.5 rounded-md">฿0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- LEFT: Editor Form (5 cols on lg) -->
+      <section id="sectionEditor" class="lg:col-span-5 space-y-6 block">
+        
+        <!-- Active Edit Banner (Shown when editing a booking loaded from history) -->
+        <div id="bannerEditingBooking" class="hidden bg-stone-900 text-white p-3.5 sm:p-4 rounded-2xl shadow-sm flex items-center justify-between text-xs border border-stone-800">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div>
+              <span class="text-stone-300 font-light">กำลังแก้ไขข้อมูล:</span>
+              <strong id="bannerEditingDocNo" class="font-mono text-champagne-300 font-semibold ml-1">SJP-XXXX</strong>
+            </div>
+          </div>
+          <button id="btnCancelEditingBooking" type="button" class="text-[11px] text-stone-400 hover:text-white underline cursor-pointer">
+            ยกเลิกแก้ไข
+          </button>
+        </div>
+
+        <!-- Section 1: Customer & Event Info -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+          <div class="flex items-center justify-between pb-3.5 border-b border-stone-100 mb-5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-md bg-stone-100 text-stone-700 flex items-center justify-center text-xs font-mono">01</span>
+              <h2 class="text-sm font-semibold text-stone-900 tracking-tight">ข้อมูลลูกค้าและงานถ่ายภาพ</h2>
+            </div>
+            <span class="text-[11px] text-stone-400 font-light">Custom Details</span>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Customer Name -->
+            <div>
+              <label for="inputCustomerName" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                ชื่อลูกค้า / คู่บ่าวสาว <span class="text-stone-400">*</span>
+              </label>
+              <div class="relative">
+                <input type="text" id="inputCustomerName" 
+                  class="block w-full px-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400 font-medium" 
+                  placeholder="เช่น คุณกมลวรรณ & คุณพิชญะ">
+              </div>
+            </div>
+
+            <!-- Customer Contact Phone Number -->
+            <div>
+              <label for="inputCustomerPhone" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                เบอร์ติดต่อลูกค้า
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                </span>
+                <input type="tel" id="inputCustomerPhone" 
+                  class="block w-full pl-9 pr-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400 font-mono" 
+                  placeholder="เช่น 081-234-5678">
+              </div>
+            </div>
+
+            <!-- Event Type -->
+            <div>
+              <label for="inputEventType" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                ประเภทงาน / โอกาส
+              </label>
+              <input type="text" id="inputEventType" 
+                class="block w-full px-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400" 
+                placeholder="เช่น งานมงคลสมรส (พิธีเช้า - ฉลองเที่ยง) / ถ่ายพรีเวดดิ้ง">
+            </div>
+
+            <!-- Venue / Location -->
+            <div>
+              <label for="inputLocation" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                สถานที่จัดงาน <span class="text-stone-400">*</span>
+              </label>
+              <input type="text" id="inputLocation" 
+                class="block w-full px-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400" 
+                placeholder="เช่น โรงแรม The Athenee Hotel Bangkok">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Event Time Period -->
+              <div>
+                <label for="inputTimePeriod" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                  ช่วงเวลาจัดงาน <span class="text-stone-400">*</span>
+                </label>
+                <input type="text" id="inputTimePeriod" 
+                  class="block w-full px-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400 font-mono" 
+                  placeholder="เช่น 06:30 - 12:00 น.">
+              </div>
+
+              <!-- Photographer Count -->
+              <div>
+                <label for="inputPhotographerCount" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                  จำนวนช่างภาพ <span class="text-stone-400">*</span>
+                </label>
+                <input type="text" id="inputPhotographerCount" 
+                  class="block w-full px-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400" 
+                  placeholder="เช่น 1 ท่าน (ช่างภาพหลัก) หรือ 2 ท่าน">
+              </div>
+            </div>
+
+            <!-- Date Picker -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputEventDate" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500">
+                  วันที่จัดงาน
+                </label>
+                <button type="button" id="btnQuickAddToCalendar" class="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 font-medium transition" title="คลิกเพื่อบันทึกงานนี้ลงใน Google Calendar">
+                  <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
+                  <span>ลง Google Calendar</span>
+                </button>
+              </div>
+              <input type="date" id="inputEventDate" 
+                class="block w-full px-3.5 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-800">
+            </div>
+
+            <!-- Customer Facebook Link (Internal only, NOT displayed on the summary card) -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputCustomerFacebook" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500">
+                  ลิงก์ Facebook ลูกค้า
+                </label>
+                <span class="text-[10px] text-stone-400 font-light flex items-center gap-1 bg-stone-100 px-2 py-0.5 rounded-full">
+                  <i data-lucide="eye-off" class="w-2.5 h-2.5"></i>
+                  ไม่แสดงในภาพ
+                </span>
+              </div>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                  <i data-lucide="facebook" class="w-3.5 h-3.5 text-blue-600"></i>
+                </span>
+                <input type="url" id="inputCustomerFacebook" 
+                  class="block w-full pl-9 pr-9 py-2.5 text-sm bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900 placeholder:text-stone-400" 
+                  placeholder="เช่น https://www.facebook.com/kamonwan.p">
+                <a id="linkOpenFacebook" href="#" target="_blank" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-blue-600 transition" title="เปิดหน้า Facebook ในแท็บใหม่">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 2: Delivery Package Selection (Clean Minimal Selector) -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+          <div class="flex items-center justify-between pb-3.5 border-b border-stone-100 mb-5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-md bg-stone-100 text-stone-700 flex items-center justify-center text-xs font-mono">02</span>
+              <h2 class="text-sm font-semibold text-stone-900 tracking-tight">รายละเอียดการส่งงาน</h2>
+            </div>
+            <span class="text-[11px] text-stone-400 font-light">Service Package</span>
+          </div>
+
+          <!-- Minimal Package Switcher Tabs -->
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <!-- Express Option -->
+            <label id="labelPkgExpress" class="group relative flex flex-col p-4 rounded-xl cursor-pointer transition-all duration-200 border border-stone-900 bg-stone-900 text-white shadow-sm">
+              <input type="radio" name="deliveryPackage" value="express" class="sr-only" checked>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-semibold tracking-wide flex items-center gap-1.5">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-champagne-300"></i>
+                  ส่งงานด่วน
+                </span>
+                <span class="pkg-check w-4 h-4 rounded-full border border-stone-600 flex items-center justify-center bg-white text-stone-900 text-[10px]">
+                  <i data-lucide="check" class="w-2.5 h-2.5 stroke-[2.5]"></i>
+                </span>
+              </div>
+              <p class="text-[11px] text-stone-300 font-light leading-snug">รับภาพทั้งหมดไม่เกิน 5 วัน</p>
+            </label>
+
+            <!-- Normal Option -->
+            <label id="labelPkgNormal" class="group relative flex flex-col p-4 rounded-xl cursor-pointer transition-all duration-200 border border-stone-200 hover:border-stone-300 bg-stone-50/50 text-stone-800">
+              <input type="radio" name="deliveryPackage" value="normal" class="sr-only">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-semibold tracking-wide flex items-center gap-1.5">
+                  <i data-lucide="camera" class="w-3.5 h-3.5 text-stone-400"></i>
+                  ส่งงานปกติ
+                </span>
+                <span class="pkg-check w-4 h-4 rounded-full border border-stone-300 flex items-center justify-center bg-transparent text-transparent text-[10px]">
+                  <i data-lucide="check" class="w-2.5 h-2.5 stroke-[2.5]"></i>
+                </span>
+              </div>
+              <p class="text-[11px] text-stone-500 font-light leading-snug">ภาพตัวอย่าง 2-3 วัน / ครบไม่เกิน 2 สัปดาห์</p>
+            </label>
+          </div>
+
+          <!-- Current Package Details Preview Box -->
+          <div class="bg-stone-50/70 rounded-xl p-4 border border-stone-200/60">
+            <div class="flex items-center justify-between mb-2.5">
+              <span class="text-[11px] font-medium uppercase tracking-wider text-stone-400">เงื่อนไขการส่งมอบงานในแพ็กเกจ:</span>
+              <button type="button" id="btnResetPackageText" class="text-[10px] text-stone-500 hover:text-stone-900 transition underline underline-offset-2">รีเซ็ต</button>
+            </div>
+            <ul id="packageItemsList" class="space-y-1.5 text-xs text-stone-700 font-light">
+              <!-- Dynamically rendered -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Section 3: Financial Calculation (Clean & Sleek) -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+          <div class="flex items-center justify-between pb-3.5 border-b border-stone-100 mb-5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-md bg-stone-100 text-stone-700 flex items-center justify-center text-xs font-mono">03</span>
+              <h2 class="text-sm font-semibold text-stone-900 tracking-tight">การคำนวณยอดเงิน</h2>
+            </div>
+            <span class="text-[10px] tracking-wider uppercase font-medium px-2 py-0.5 rounded bg-stone-100 text-stone-600">AUTO CALC</span>
+          </div>
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Total Amount -->
+              <div>
+                <label for="inputTotalAmount" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                  ยอดสุทธิ (Total)
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400 text-xs font-mono">฿</span>
+                  <input type="number" id="inputTotalAmount" min="0" step="100"
+                    class="block w-full pl-8 pr-3.5 py-2.5 text-sm font-mono font-medium bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900" 
+                    placeholder="0">
+                </div>
+              </div>
+
+              <!-- Deposit Amount -->
+              <div>
+                <label for="inputDepositAmount" class="block text-[11px] font-medium uppercase tracking-wider text-stone-500 mb-1.5">
+                  ยอดมัดจำ (Deposit)
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400 text-xs font-mono">฿</span>
+                  <input type="number" id="inputDepositAmount" min="0" step="100"
+                    class="block w-full pl-8 pr-3.5 py-2.5 text-sm font-mono font-medium bg-stone-50/50 hover:bg-white focus:bg-white border border-stone-200 rounded-xl focus:ring-1 focus:ring-stone-400 focus:border-stone-400 transition-all duration-150 text-stone-900" 
+                    placeholder="0">
+                </div>
+              </div>
+            </div>
+
+            <!-- Auto-Calculated Balance Indicator -->
+            <div class="bg-stone-50 rounded-xl p-4 border border-stone-200/80 flex items-center justify-between">
+              <div>
+                <div class="text-[11px] font-medium uppercase tracking-wider text-stone-400">ยอดคงเหลือ</div>
+                <div id="displayCalcFormula" class="text-[10px] text-stone-500 font-mono mt-0.5">ยอดสุทธิ - มัดจำ</div>
+              </div>
+              <div class="text-right">
+                <div id="displayRemainingAmount" class="text-xl sm:text-2xl font-mono font-semibold text-stone-900 tracking-tight">฿0</div>
+                <span id="badgePaymentStatus" class="inline-block text-[10px] font-medium tracking-wide px-2 py-0.5 rounded-full bg-stone-200/70 text-stone-700">
+                  รอชำระวันงาน
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 4: Card Themes (Modern Minimalist Presets) -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+          <div class="flex items-center justify-between pb-3.5 border-b border-stone-100 mb-4">
+            <div class="flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-md bg-stone-100 text-stone-700 flex items-center justify-center text-xs font-mono">04</span>
+              <h2 class="text-sm font-semibold text-stone-900 tracking-tight">สไตล์และโทนสีมินิมอล</h2>
+            </div>
+            <span class="text-[11px] text-stone-400 font-light">Minimal Aesthetic</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2.5">
+            <!-- Theme: Clean White -->
+            <button type="button" data-theme="clean" class="theme-btn active p-3 rounded-xl border border-stone-900 bg-white text-left transition-all duration-150 flex flex-col justify-between shadow-sm">
+              <div class="flex items-center justify-between w-full mb-1">
+                <span class="w-3.5 h-3.5 rounded-full border border-stone-300 bg-[#ffffff]"></span>
+                <span class="text-[9px] font-mono tracking-widest text-stone-400">01</span>
+              </div>
+              <span class="text-xs font-semibold text-stone-900">Atelier White</span>
+              <span class="text-[10px] text-stone-500 font-light">ขาวคลีน โมเดิร์น</span>
+            </button>
+
+            <!-- Theme: Warm Linen -->
+            <button type="button" data-theme="warm" class="theme-btn p-3 rounded-xl border border-stone-200 hover:border-stone-300 bg-stone-50/60 text-left transition-all duration-150 flex flex-col justify-between">
+              <div class="flex items-center justify-between w-full mb-1">
+                <span class="w-3.5 h-3.5 rounded-full border border-stone-300 bg-[#f7f5f0]"></span>
+                <span class="text-[9px] font-mono tracking-widest text-stone-400">02</span>
+              </div>
+              <span class="text-xs font-semibold text-stone-900">Warm Linen</span>
+              <span class="text-[10px] text-stone-500 font-light">อบอุ่น เรียบหรู</span>
+            </button>
+
+            <!-- Theme: Obsidian Noir -->
+            <button type="button" data-theme="dark" class="theme-btn p-3 rounded-xl border border-stone-200 hover:border-stone-300 bg-stone-50/60 text-left transition-all duration-150 flex flex-col justify-between">
+              <div class="flex items-center justify-between w-full mb-1">
+                <span class="w-3.5 h-3.5 rounded-full border border-stone-700 bg-[#141518]"></span>
+                <span class="text-[9px] font-mono tracking-widest text-stone-400">03</span>
+              </div>
+              <span class="text-xs font-semibold text-stone-900">Obsidian</span>
+              <span class="text-[10px] text-stone-500 font-light">ดำเข้ม หรูหรา</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- RIGHT: Visual Preview & Export Controls (7 cols on lg) -->
+      <section id="sectionPreview" class="lg:col-span-7 space-y-4 lg:sticky lg:top-20 hidden lg:block">
+        
+        <!-- Action Toolbar -->
+        <div class="bg-white px-5 py-3.5 rounded-2xl border border-stone-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-stone-100 text-stone-700">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Card Preview
+            </span>
+            <span class="text-[11px] text-stone-400 hidden sm:inline">• ความคมชัดสูง 3x High-DPI</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <!-- Save Booking Information Button -->
+            <button id="btnSaveToSheets" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-xl transition shadow-xs hover:border-emerald-300 active:scale-[0.98]" title="บันทึกข้อมูลการจองนี้ลงในระบบและ Google Sheets">
+              <i data-lucide="bookmark-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span id="btnSaveToSheetsText">บันทึกข้อมูลการจอง</span>
+            </button>
+
+            <!-- Google Calendar Button -->
+            <button id="btnGoogleCalendar" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-stone-700 bg-white hover:bg-stone-50 border border-stone-200 rounded-xl transition shadow-xs hover:border-stone-300" title="เพิ่มกำหนดการและรายละเอียดงานนี้ลงใน Google Calendar">
+              <i data-lucide="calendar-plus" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span>ลง Google Calendar</span>
+            </button>
+
+            <!-- Copy Image Button -->
+            <button id="btnCopyImage" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-stone-700 bg-white hover:bg-stone-50 border border-stone-200 rounded-xl transition shadow-xs">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-stone-500"></i>
+              <span>คัดลอกรูป</span>
+            </button>
+
+            <!-- Save JPEG Button -->
+            <button id="btnSaveJpeg" type="button" class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-medium tracking-wide text-white bg-stone-900 hover:bg-stone-850 active:scale-[0.98] rounded-xl shadow-sm transition">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-stone-300"></i>
+              <span>บันทึกภาพ JPEG</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toastMessage" class="hidden fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 border border-stone-800">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+          <span id="toastText" class="text-xs font-light">บันทึกรูปภาพเรียบร้อยแล้ว</span>
+        </div>
+
+        <!-- Target Container for Export -->
+        <div class="overflow-x-auto pb-6 flex justify-center">
+          
+          <!-- SUMMARY CARD (The Luxury Minimalist Output Card) -->
+          <div id="summaryCardToExport" class="theme-clean w-full max-w-[540px] bg-white text-stone-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.06)] border border-stone-200/90 relative overflow-hidden transition-all duration-300">
+            
+            <!-- Hairline Subtle Watermark & Brand Accent -->
+            <div class="card-ambient-glow pointer-events-none absolute -top-32 -right-32 w-80 h-80 rounded-full bg-stone-100/60" data-html2canvas-ignore="true"></div>
+            
+            <!-- 1. Header: Brand Logo & Document Meta -->
+            <div class="relative z-10 border-b border-stone-200/80 pb-5 mb-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <img id="cardLogoImg" src="logo-dark.png" alt="Sook Jai Pix" class="h-11 sm:h-14 max-h-[52px] w-auto object-contain transition-all duration-200">
+                </div>
+
+                <div class="text-right">
+                  <div class="text-[11px] font-mono text-stone-400" id="cardDocNo">NO: SJP-202610-01</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Client & Event Profile (Minimalist Editorial Layout) -->
+            <div class="relative z-10 space-y-4 mb-6">
+              
+              <!-- Customer Name & Event Title -->
+              <div>
+                <span class="text-[9px] font-mono uppercase tracking-[0.25em] text-stone-400 block mb-1">Customer / Event</span>
+                <div class="flex flex-wrap items-baseline gap-2">
+                  <h3 class="text-xl sm:text-2xl font-semibold tracking-tight text-stone-900 leading-snug" id="cardCustomerName">
+                    ระบุชื่อลูกค้า / คู่บ่าวสาว
+                  </h3>
+                  <span id="cardCustomerPhone" class="hidden text-xs font-mono text-stone-500 font-normal"></span>
+                </div>
+                <p class="text-xs text-stone-500 font-light mt-0.5 hidden" id="cardEventType">
+                </p>
+              </div>
+
+              <!-- Metadata Grid with Hairline Dividers -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-3 border-t border-stone-100 text-xs">
+                
+                <!-- Location -->
+                <div>
+                  <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-stone-400 block mb-0.5">Location</span>
+                  <div class="font-medium text-stone-800 leading-snug" id="cardLocation">
+                    ระบุสถานที่จัดงาน
+                  </div>
+                </div>
+
+                <!-- Date & Time -->
+                <div>
+                  <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-stone-400 block mb-0.5">Schedule</span>
+                  <div class="font-medium text-stone-800 font-mono text-[11px] leading-snug" id="cardDateTime">
+                    ระบุวันที่และเวลา
+                  </div>
+                </div>
+
+                <!-- Photographers -->
+                <div class="sm:col-span-2 pt-1 border-t border-stone-100/60">
+                  <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-stone-400 block mb-0.5">Photography Team</span>
+                  <div class="font-medium text-stone-800 text-xs" id="cardPhotographerCount">
+                    ตามตกลง
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 3. Delivery Details (Editorial List Style) -->
+            <div class="relative z-10 bg-stone-50/80 rounded-2xl p-5 border border-stone-200/60 mb-6">
+              <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-stone-200/50">
+                <span class="text-[10px] font-mono uppercase tracking-[0.2em] text-stone-500 flex items-center gap-1.5">
+                  <i data-lucide="package" class="w-3.5 h-3.5 text-stone-400"></i>
+                  Deliverables & Timeline
+                </span>
+              </div>
+
+              <!-- Deliverable Items -->
+              <ul id="cardDeliveryItems" class="space-y-2 text-xs text-stone-700 font-light">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+
+            <!-- 4. Financial Breakdown (Luxury Clean Monochrome) -->
+            <div class="relative z-10 border border-stone-200 rounded-2xl p-5 sm:p-6 mb-6 bg-white shadow-2xs">
+              <div class="space-y-3 text-xs">
+                
+                <!-- Total Amount -->
+                <div class="flex items-center justify-between text-stone-600">
+                  <span class="font-light">ยอดรวมค่าบริการสุทธิ (Total)</span>
+                  <span class="font-mono font-medium text-sm text-stone-800" id="cardTotalAmount">฿0</span>
+                </div>
+
+                <!-- Deposit Amount -->
+                <div class="flex items-center justify-between text-stone-600">
+                  <span class="font-light">ยอดมัดจำ</span>
+                  <span class="font-mono font-medium text-sm text-stone-500" id="cardDepositAmount">-฿0</span>
+                </div>
+
+                <!-- Subtle Hairline -->
+                <div class="border-t border-dashed border-stone-200 my-2"></div>
+
+                <!-- Remaining Balance (Highlight of Minimal Luxury) -->
+                <div class="flex items-baseline justify-between pt-1">
+                  <div>
+                    <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-stone-400 block mb-0.5">Balance Due</span>
+                    <span class="text-xs font-semibold text-stone-900">ยอดคงเหลือ</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-2xl sm:text-3xl font-mono font-bold tracking-tight text-stone-900" id="cardRemainingAmount">
+                      ฿0
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 5. Minimalist Footer -->
+            <div class="relative z-10 pt-4 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500 font-light">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span class="text-[10px] uppercase font-mono tracking-wider text-stone-400">SOOK JAI PIX SUMMARY</span>
+              </div>
+
+              <div class="text-right text-[10px] text-stone-400 font-mono uppercase tracking-wider">
+                <span id="cardDateGenerated">DATE: 30 OCT 2026</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Studio Footer -->
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-stone-200/60 text-center text-xs text-stone-400 font-light">
+    <p>SOOK JAI PIX • PROFESSIONAL PHOTOGRAPHY SERVICE • ALL RIGHTS RESERVED</p>
+  </footer>
+
+  <!-- Mobile Floating Bottom Action Bar (Fixed at bottom on mobile < lg) -->
+  <div id="mobileBottomBar" class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/80 px-4 py-3 safe-bottom shadow-[0_-8px_25px_rgba(0,0,0,0.07)]">
+    <!-- Bar 1: While in Editor Mode -->
+    <div id="mobileEditorBar" class="flex items-center justify-between gap-3">
+      <div>
+        <span class="text-[10px] font-mono uppercase tracking-wider text-stone-400 block">ยอดคงเหลือ</span>
+        <span id="mobileBarRemaining" class="text-base font-mono font-bold text-stone-900">฿0</span>
+      </div>
+      <button id="btnMobileGoPreview" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-stone-900 hover:bg-stone-850 text-white text-xs font-semibold rounded-xl shadow-sm active:scale-[0.98] transition">
+        <span>ดูใบสรุปยอด</span>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+
+    <!-- Bar 2: While in Preview Mode -->
+    <div id="mobilePreviewBar" class="hidden flex items-center justify-between gap-2">
+      <button id="btnMobileBackEdit" type="button" class="inline-flex items-center gap-1 px-3 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium rounded-xl transition">
+        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+        <span>แก้ไข</span>
+      </button>
+      <button id="btnMobileSaveSheets" type="button" class="inline-flex items-center gap-1 px-3 py-2.5 bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold rounded-xl transition" title="บันทึกข้อมูลการจอง">
+        <i data-lucide="bookmark-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+        <span class="hidden xs:inline">บันทึกข้อมูลการจอง</span>
+        <span class="xs:hidden">บันทึกข้อมูล</span>
+      </button>
+      <button id="btnMobileCalendar" type="button" class="inline-flex items-center gap-1 px-3 py-2.5 bg-blue-50 text-blue-700 border border-blue-200/60 text-xs font-medium rounded-xl transition">
+        <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i>
+        <span class="hidden xs:inline">Calendar</span>
+      </button>
+      <button id="btnMobileSaveJpeg" type="button" class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-stone-900 hover:bg-stone-850 text-white text-xs font-semibold rounded-xl shadow-sm active:scale-[0.98] transition">
+        <i data-lucide="download" class="w-3.5 h-3.5 text-stone-300"></i>
+        <span>บันทึกภาพ JPEG</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal: Google Sheets & Apps Script Setup Modal -->
+  <div id="modalGasSettings" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-3xl w-full max-w-3xl border border-stone-200 shadow-2xl overflow-hidden my-8 max-h-[92vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="p-5 sm:p-6 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/60">
+            <i data-lucide="sheet" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-stone-900">ตั้งค่าเชื่อมต่อ Google Sheets</h3>
+            <p class="text-xs text-stone-500 font-light">เชื่อมต่อด้วย Google Apps Script Web App เพื่อบันทึกและซิงค์ข้อมูลแบบเรียลไทม์</p>
+          </div>
+        </div>
+        <button id="btnCloseGasSettings" type="button" class="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
+        
+        <!-- Important Warning Banner -->
+        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-950 text-xs space-y-2">
+          <div class="flex items-center gap-2 font-semibold text-amber-900">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+            <span>ข้อควรระวังสำคัญที่สุดในการเชื่อมต่อ Google Sheets:</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-stone-700 font-light pl-1 leading-relaxed">
+            <li><strong>ต้องสร้างจากใน Google Sheets:</strong> เปิด Google Sheet ขึ้นมาก่อน แล้วไปที่เมนู <span class="font-medium text-stone-900">"ส่วนขยาย (Extensions) &gt; Apps Script"</span> (ห้ามสร้าง script ลอยๆ ที่ script.google.com เพราะสคริปต์จะไม่รู้ว่าจะบันทึกลงชีตไหน)</li>
+            <li><strong>สิทธิ์การเข้าถึง (Who has access):</strong> ในขั้นตอน Deploy ช่อง <em>ผู้มีสิทธิ์เข้าถึง</em> <strong>ต้องเลือกเป็น "ทุกคน (Anyone)"</strong> เท่านั้น หากเลือกเป็นเฉพาะฉัน Google จะปฏิเสธการเชื่อมต่อจากเว็บ</li>
+            <li><strong>URL ที่ใช้:</strong> นำ <span class="font-medium text-stone-900">Web app URL ที่ลงท้ายด้วย <code class="font-mono bg-white px-1 py-0.5 rounded border border-amber-300">/exec</code></span> มาใส่ (ห้ามนำลิงก์ Google Sheets หรือหน้าแก้ไขสคริปต์มาใส่)</li>
+          </ul>
+        </div>
+
+        <!-- Step 1 to 4 Instructions -->
+        <div class="space-y-4">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-stone-500">ขั้นตอนการติดตั้ง (เพียง 4 ขั้นตอน)</h4>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-stone-600">
+            <!-- Step 1 -->
+            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px] font-mono">1</span>
+                <span class="font-semibold text-stone-900">เปิด Google Sheets</span>
+              </div>
+              <p class="text-stone-500 font-light">
+                สร้างสเปรดชีตใหม่ใน Google Drive จากนั้นไปที่เมนู <strong class="text-stone-800">ส่วนขยาย (Extensions)</strong> &gt; <strong class="text-stone-800">Apps Script</strong>
+              </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px] font-mono">2</span>
+                <span class="font-semibold text-stone-900">วางโค้ดสคริปต์ฉบับเต็ม</span>
+              </div>
+              <p class="text-stone-500 font-light">
+                ลบโค้ดเดิมใน <code class="font-mono text-stone-700 bg-white px-1 py-0.5 rounded border border-stone-200">Code.gs</code> ออกทั้งหมด แล้วกดปุ่มคัดลอกโค้ดด้านล่างนี้ไปวาง
+              </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px] font-mono">3</span>
+                <span class="font-semibold text-stone-900">ทำให้ใช้งานได้ (Deploy)</span>
+              </div>
+              <p class="text-stone-500 font-light">
+                กดปุ่มสีน้ำเงิน <strong class="text-stone-800">การทำให้ใช้งานได้ (Deploy)</strong> &gt; <strong class="text-stone-800">การทำให้ใช้งานได้ใหม่</strong> &gt; เลือกประเภท <strong class="text-stone-800">เว็บแอป (Web app)</strong>
+              </p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px] font-mono">4</span>
+                <span class="font-semibold text-stone-900">ตั้งสิทธิ์เข้าถึง: ทุกคน (Anyone)</span>
+              </div>
+              <p class="text-stone-500 font-light">
+                ในช่อง <strong class="text-stone-800">ผู้มีสิทธิ์เข้าถึง (Who has access)</strong> ให้เลือกเป็น <strong class="text-emerald-700 font-medium">ทุกคน (Anyone)</strong> จากนั้นกด Deploy และคัดลอก Web App URL มาใส่
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Copy Script Box -->
+        <div class="p-4 rounded-2xl bg-stone-900 text-stone-100 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="code" class="w-4 h-4 text-champagne-400"></i>
+              <span class="text-xs font-mono font-medium text-stone-200">Google Apps Script (Code.gs) — ฉบับสมบูรณ์ v2.1</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnToggleGasCodeView" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-300 hover:text-white bg-stone-800 hover:bg-stone-750 transition">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                <span id="btnToggleGasCodeViewText">ดูโค้ด</span>
+              </button>
+              <button id="btnCopyGasCode" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span id="btnCopyGasCodeText">คัดลอกโค้ดสคริปต์</span>
+              </button>
+            </div>
+          </div>
+          <p class="text-[11px] text-stone-400 font-light leading-relaxed">
+            สคริปต์นี้จะสร้างชีต <code class="font-mono text-champagne-300">Bookings</code> ให้อัตโนมัติ พร้อมระบบซิงค์ข้อมูลสองทาง (Two-Way Batch Sync) และป้องกันแถวซ้ำซ้อน
+          </p>
+
+          <!-- Collapsible Code Container -->
+          <div id="gasCodeFullContainer" class="hidden pt-3 border-t border-stone-800 space-y-2">
+            <div class="flex items-center justify-between text-[11px] text-stone-400">
+              <span>สามารถคลิกในกล่องด้านล่างแล้วกด Ctrl+A (หรือ Cmd+A) เพื่อคัดลอกทั้งหมดได้เช่นกัน:</span>
+              <button id="btnSelectAllCode" type="button" class="text-champagne-400 hover:underline">เลือกทั้งหมด</button>
+            </div>
+            <textarea id="gasCodeTextarea" readonly rows="10" class="w-full p-3 font-mono text-[11px] bg-stone-950 text-stone-200 rounded-xl border border-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-600 select-all"></textarea>
+          </div>
+        </div>
+
+        <!-- URL Input & Connection Test -->
+        <div class="space-y-3 pt-2 border-t border-stone-100">
+          <label for="gasUrlInput" class="block text-xs font-semibold text-stone-900">
+            Google Apps Script Web App URL:
+          </label>
+          <div class="relative">
+            <input type="url" id="gasUrlInput" 
+              placeholder="https://script.google.com/macros/s/.../exec" 
+              class="w-full px-4 py-3 text-xs sm:text-sm font-mono bg-stone-50 hover:bg-white focus:bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-stone-900 transition">
+          </div>
+          
+          <!-- Live Validation Warning -->
+          <div id="gasUrlLiveWarning" class="hidden p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200 flex items-start gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0 mt-0.5"></i>
+            <span id="gasUrlLiveWarningText" class="leading-relaxed"></span>
+          </div>
+
+          <p class="text-[11px] text-stone-400 font-light">
+            * สังเกตว่า URL ต้องขึ้นต้นด้วย <code class="font-mono text-stone-600 bg-stone-100 px-1 py-0.5 rounded">https://script.google.com/macros/s/...</code> และลงท้ายด้วย <code class="font-mono text-stone-600 bg-stone-100 px-1 py-0.5 rounded">/exec</code>
+          </p>
+
+          <!-- Test Result Message Box -->
+          <div id="gasTestResultBox" class="hidden p-3.5 rounded-xl text-xs font-light"></div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-stone-100 bg-stone-50/50 flex flex-wrap items-center justify-between gap-3">
+        <button id="btnClearGasUrl" type="button" class="text-xs text-rose-600 hover:text-rose-700 font-medium px-2 py-1">
+          ลบการเชื่อมต่อ (กลับไปใช้โหมดออฟไลน์)
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button id="btnOpenInNewTab" type="button" class="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition shadow-xs" title="เปิดทดสอบ URL นี้ในแท็บใหม่ของเบราว์เซอร์ เพื่อดูผลลัพธ์จาก Google โดยตรง">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>เปิดทดสอบในแท็บใหม่</span>
+          </button>
+          <button id="btnTestGasConnection" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium text-stone-700 bg-white hover:bg-stone-100 border border-stone-200 rounded-xl transition shadow-xs">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-champagne-600"></i>
+            <span id="btnTestGasText">ทดสอบการเชื่อมต่อ</span>
+          </button>
+          <button id="btnSaveGasUrl" type="button" class="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold text-white bg-stone-900 hover:bg-stone-850 rounded-xl shadow-sm transition">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+            <span>บันทึกและซิงค์ทันที</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="logos_base64.js"></script>
+  <script src="gas-code-source.js"></script>
+  <script src="sheets-api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

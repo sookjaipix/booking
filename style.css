@@ -1,0 +1,161 @@
+/* Modern Minimalist Luxury Styling for Sook Jai Pix (iPhone & Mobile Optimized) */
+
+/* Global Smooth Font & Touch Settings */
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body, button, input, textarea, select {
+  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Number input spinners hide for clean look */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* PREVENT iOS AUTO-ZOOM ON INPUT FOCUS
+   iOS Safari automatically zooms in on any input with font-size < 16px */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="url"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe Area Insets for iPhone (Home Indicator & Dynamic Island / Notch) */
+.safe-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+/* 1. Theme: Atelier White (Default Clean Minimal) */
+.theme-clean {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  border-color: #e7e5e4 !important;
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+}
+.theme-clean .card-ambient-glow {
+  background: radial-gradient(circle, rgba(245, 245, 244, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+/* 2. Theme: Warm Linen (Warm Luxury Editorial) */
+.theme-warm {
+  background-color: #f7f5f0 !important;
+  color: #292524 !important;
+  border-color: #e6e2da !important;
+  box-shadow: 0 20px 45px -15px rgba(60, 50, 40, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+}
+.theme-warm .bg-white {
+  background-color: #ffffff !important;
+  border-color: #e8e4dc !important;
+}
+.theme-warm .bg-stone-50\/80,
+.theme-warm .bg-stone-50\/70,
+.theme-warm .bg-stone-50 {
+  background-color: #f0ece3 !important;
+  border-color: #e2ddd3 !important;
+}
+.theme-warm .card-ambient-glow {
+  background: radial-gradient(circle, rgba(235, 228, 218, 0.7) 0%, rgba(247, 245, 240, 0) 70%);
+}
+
+/* 3. Theme: Obsidian Noir (Modern Dark Luxury) */
+.theme-dark {
+  background-color: #121316 !important;
+  color: #f4f4f5 !important;
+  border-color: #23262d !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+}
+.theme-dark .card-ambient-glow {
+  background: radial-gradient(circle, rgba(35, 38, 48, 0.6) 0%, rgba(18, 19, 22, 0) 70%);
+}
+.theme-dark .text-stone-900,
+.theme-dark .text-stone-800 {
+  color: #f4f4f5 !important;
+}
+.theme-dark .text-stone-700,
+.theme-dark .text-stone-600 {
+  color: #d4d4d8 !important;
+}
+.theme-dark .text-stone-500,
+.theme-dark .text-stone-400 {
+  color: #a1a1aa !important;
+}
+.theme-dark .bg-white {
+  background-color: #181a1f !important;
+  border-color: #272a33 !important;
+}
+.theme-dark .bg-stone-50\/80,
+.theme-dark .bg-stone-50\/70,
+.theme-dark .bg-stone-50\/50,
+.theme-dark .bg-stone-50 {
+  background-color: #181a1f !important;
+  border-color: #262a34 !important;
+}
+.theme-dark .border-stone-200,
+.theme-dark .border-stone-200\/80,
+.theme-dark .border-stone-200\/60,
+.theme-dark .border-stone-200\/50,
+.theme-dark .border-stone-100 {
+  border-color: #262933 !important;
+}
+.theme-dark #cardRemainingAmount {
+  color: #e5c28a !important; /* Elegant Champagne Gold for Dark theme */
+}
+.theme-dark .bg-stone-900 {
+  background-color: #272a33 !important;
+  color: #f4f4f5 !important;
+}
+
+/* Subtle Micro-Animations & Active states */
+.theme-btn.active {
+  box-shadow: 0 0 0 1.5px #18181b;
+}
+
+/* Package checkmark indicator transition */
+.pkg-selected {
+  border-color: #18181b !important;
+  background-color: #18181b !important;
+  color: #ffffff !important;
+}
+
+/* Print optimizations */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #summaryCardToExport, #summaryCardToExport * {
+    visibility: visible;
+  }
+  #summaryCardToExport {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
