@@ -314,17 +314,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cardLocation.textContent = elLocation.value.trim() || 'ระบุสถานที่จัดงาน';
 
-    // Combine Date and Time
+    // Render Date and Time on separate lines in the booking card
     const dateFormatted = formatThaiDate(elEventDate.value);
     const timeFormatted = elTimePeriod.value.trim();
     if (dateFormatted && timeFormatted) {
-      cardDateTime.textContent = `${dateFormatted} (${timeFormatted})`;
+      cardDateTime.innerHTML = `
+        <div class="font-medium text-stone-800 leading-snug">${dateFormatted}</div>
+        <div class="font-medium text-stone-800 leading-snug mt-0.5">${timeFormatted}</div>
+      `;
     } else if (dateFormatted) {
-      cardDateTime.textContent = dateFormatted;
+      cardDateTime.innerHTML = `<div class="font-medium text-stone-800 leading-snug">${dateFormatted}</div>`;
     } else if (timeFormatted) {
-      cardDateTime.textContent = timeFormatted;
+      cardDateTime.innerHTML = `<div class="font-medium text-stone-800 leading-snug">${timeFormatted}</div>`;
     } else {
-      cardDateTime.textContent = 'ระบุวันที่และเวลา';
+      cardDateTime.innerHTML = `<div class="text-stone-400 font-light">ระบุวันที่และเวลา</div>`;
     }
 
     cardPhotographerCount.textContent = elPhotographerCount.value.trim() || 'ตามตกลง';

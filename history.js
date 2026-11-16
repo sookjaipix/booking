@@ -400,14 +400,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Card Middle: Event Details -->
         <div class="py-3.5 space-y-2 text-xs text-stone-600">
-          <!-- Event Type -->
+          <!-- Event Type & Schedule -->
           <div class="flex items-start gap-2">
             <i data-lucide="calendar-heart" class="w-3.5 h-3.5 text-stone-400 mt-0.5 flex-shrink-0"></i>
-            <div>
-              <span class="font-medium text-stone-900">${booking.eventType || '-'}</span>
-              <span class="text-stone-400 mx-1">•</span>
-              <span class="font-mono text-stone-700">${formatThaiDate(booking.eventDate)}</span>
-              ${booking.timePeriod ? `<span class="text-stone-500 font-light ml-1">(${booking.timePeriod})</span>` : ''}
+            <div class="space-y-0.5">
+              <div class="font-medium text-stone-900">${booking.eventType || '-'}</div>
+              <div class="text-[11px] font-mono text-stone-800">
+                <div class="font-medium text-stone-800 leading-snug">${formatThaiDate(booking.eventDate)}</div>
+                ${booking.timePeriod ? `<div class="font-medium text-stone-800 leading-snug mt-0.5">${booking.timePeriod}</div>` : ''}
+              </div>
             </div>
           </div>
 
